@@ -7,8 +7,14 @@ var bcrypt = require('bcryptjs');
 const bodyParser=require('body-parser');
 server.use(bodyParser.json())
 var jwt=require('jsonwebtoken');
+var fetchuser=require('../middleware/fetchuser')
 const jwt_secret = "shreyasiwebdev"
-//strong Data in mongodb using: POST "api/auth/createUser"
+
+
+
+
+
+//Creating user and storing Data in mongodb using: POST "api/auth/createUser"
 router.post('/createUser', [
 body('name', 'Enter a valid name').isLength({ min: 3 }),
 body('email', "Enter a valid Email").isEmail(),
@@ -51,6 +57,61 @@ const data={
 }
 })
 
+
+
+
+//Authentication of user using: POST "api/auth/login"
+router.post('/login', [
+    body('name', 'Enter a valid name').isLength({ min: 3 }),
+    body('email', "Enter a valid Email").isEmail(),
+    body('password', 'Password cannot be blank').notEmpty(),
+    ], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) { //if any of the req is not matching the validation send error
+      return res.status(400).json({ errors: errors.array() });
+    }
+   
+    
+    try {
+        let user=await User.findOne({email:req.body.email}) //checking if the email is already used or not
+        if(!user){ //if email is already use donts create new data send error
+            return res.status(400).json({error:"Incorrect email or Password"})
+        }
+        const pass=await bcrypt.compare( req.body.password,user.password)
+        if(!pass){
+            return res.status(400).json({error:"Incorrect email or Password"})
+    
+        }
+        const data={
+            user:{
+                id:user.id
+            }
+        }
+          const authtoken=jwt.sign(data,jwt_secret);
+          res.json(authtoken);
+       
+    }
+     
+      //res.json(user);
+     catch (error) {
+     
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
+    })
+
+
+    //Router3:get loggedin /api/auth/getuser
+    router.post('/getuser',fetchuser,async(req,res)=>{
+        try{
+            userId=req.user.id
+            const user  = await User.findById(userId).select("-password")
+            res.send(user);
+        }catch(error){
+            console.error(error.message);
+            res.status(500).send("Internal Server Error");
+        }
+    })
 
 //finding data from mongodb
         // run()
