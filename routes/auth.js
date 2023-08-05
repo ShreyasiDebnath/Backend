@@ -14,7 +14,7 @@ const jwt_secret = "shreyasiwebdev"
 
 
 
-//Creating user and storing Data in mongodb using: POST "api/auth/createUser"
+//ROUTER 1 : Creating user and storing Data in mongodb using: POST "api/auth/createUser"
 router.post('/createUser', [
 body('name', 'Enter a valid name').isLength({ min: 3 }),
 body('email', "Enter a valid Email").isEmail(),
@@ -60,7 +60,7 @@ const data={
 
 
 
-//Authentication of user using: POST "api/auth/login"
+//ROUTER 2: Authentication of user using: POST "api/auth/login"
 router.post('/login', [
     body('name', 'Enter a valid name').isLength({ min: 3 }),
     body('email', "Enter a valid Email").isEmail(),

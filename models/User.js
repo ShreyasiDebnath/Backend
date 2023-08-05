@@ -2,7 +2,7 @@ const  mongoose = require("mongoose");
 const { Schema } = mongoose;
 // creating schema
 // Everything in Mongoose starts with a Schema. Each schema maps to a MongoDB collection and defines the shape of the documents within that collection.
-  const userSchema = new mongoose.Schema({
+  const userSchema = new Schema({
       name: {type: String,required:true}, // String is shorthand for {type: String}
       email: {type: String,required:true,unique:true},
       password: {type: String,required:true,unique:true},
